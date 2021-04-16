@@ -39,7 +39,7 @@ lyellow:
 
 % c-sdk {
 
-// Hilfsfunktion, um GPIO-Ausgabe zu konfigurieren 
+// Hilfsfunktion, um die Zustandsmaschine zu konfigurieren 
 
 void trafficlight_program_init(PIO pio, uint sm, uint offset, 
                                uint pin, uint pincount, uint freq) {
@@ -48,26 +48,30 @@ void trafficlight_program_init(PIO pio, uint sm, uint offset,
         pio_gpio_init(pio, (pin+i) % 32);   // initialisieren aller Pins
    } 
 
-   // pins als Out-Pins festlegen
+   // pins als Ausgabe-Pins (true) festlegen
    pio_sm_set_consecutive_pindirs(pio, sm, pin, pincount, true);
 
    // Default Configuration holen
    pio_sm_config c = trafficlight_program_get_default_config(offset);
 
-   // Die Pins gehören zum out-Mapping:
+   // Die vier Pins definieren das out-Mapping:
    sm_config_set_out_pins(&c, pin, pincount);
 
-   // div <= 2^16-1 - wird hier nicht geprüft
+   // div <= 65535 (= 2^16-1) - wird hier nicht geprüft
    float div = (float)clock_get_hz(clk_sys) / freq;
+
+   // Jetzt Clock Divider übergeben
    sm_config_set_clkdiv(&c, div);
+
    // Wir kombinieren beide FIFOs zu einer TX_FIFO;
    sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_TX);
 
-   // Shift right, no auto-pull, 24 Bits
+   // Rechts-Schieber, kein auto-pull, Schwellwert: 32 Bits
    sm_config_set_out_shift(&c, true, false, 32);
 
    // Zustandsmaschine initalisieren
    pio_sm_init(pio, sm, offset, &c);
+
    // und starten
    pio_sm_set_enabled(pio, sm, true);
 }

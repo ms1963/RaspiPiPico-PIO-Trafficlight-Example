@@ -9,32 +9,19 @@
     jmp !OSRE cont 			    ; OSR != EMPTY => weiter bei cont
 	mov osr,y 					; Sonst: OSR leer => neu aufladen
 cont:
-; ROT-PHASE
+; ROT oder GRÜN
     mov x,isr                   ; ISR enthält Schleifenzahl für x
     out pins,4    				; 3 Bits aus OSR zur Ausgabe
-lred:
+lredgreen:
     nop [31]
-	jmp x-- lred [31]
-; ROT-GELB-PHASE
+	jmp x-- lredgreen [31]
+; ROT-GELB oder Gelb
     mov x,isr                   ; ISR enthält Schleifenzahl für x
 	out pins,4  				; 3 Bits aus OSR zur Ausgabe
-lredyellow:	
+lyellowred:	
     nop [10]
-    jmp x-- lredyellow [10] 
-; GRÜN-PHASE
-        mov x,isr 				; ISR enthält Schleifenzahl für x
-    out pins,4  				; 3 Bits aus OSR zur Ausgabe
-lgreen:
-    nop [31]
-	jmp x-- lgreen [31]
-; GELB-PHASE
-    mov x,isr                   ; ISR enthält Schleifenzahl für x
-    out pins,4  				; 3 Bits aus OSR zur Ausgabe
-lyellow:
-    nop [10]
-	jmp x-- lyellow [10]
+    jmp x-- lyellowred [10] 
 .wrap
-
 
 
 % c-sdk {

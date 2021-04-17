@@ -1,0 +1,79 @@
+
+.program trafficlight
+	pull                 		; Zeit von CPU-Core holen
+	mov x,osr     				; und in x speichern
+    mov isr,x                   ; sowie im ungenutzten ISR	
+    pull                        ; Pattern von CPU-Core holen
+    mov y,osr                   ; und in y speichern
+.wrap_target
+    jmp !OSRE cont 			    ; OSR != EMPTY => weiter bei cont
+	mov osr,y 					; Sonst: OSR leer => neu aufladen
+cont:
+; ROT-PHASE
+    mov x,isr                   ; ISR enthält Schleifenzahl für x
+    out pins,4    				; 3 Bits aus OSR zur Ausgabe
+lred:
+    nop [31]
+	jmp x-- lred [31]
+; ROT-GELB-PHASE
+    mov x,isr                   ; ISR enthält Schleifenzahl für x
+	out pins,4  				; 3 Bits aus OSR zur Ausgabe
+lredyellow:	
+    nop [10]
+    jmp x-- lredyellow [10] 
+; GRÜN-PHASE
+        mov x,isr 				; ISR enthält Schleifenzahl für x
+    out pins,4  				; 3 Bits aus OSR zur Ausgabe
+lgreen:
+    nop [31]
+	jmp x-- lgreen [31]
+; GELB-PHASE
+    mov x,isr                   ; ISR enthält Schleifenzahl für x
+    out pins,4  				; 3 Bits aus OSR zur Ausgabe
+lyellow:
+    nop [10]
+	jmp x-- lyellow [10]
+.wrap
+
+
+
+% c-sdk {
+
+// Hilfsfunktion, um die Zustandsmaschine zu konfigurieren 
+
+void trafficlight_program_init(PIO pio, uint sm, uint offset, 
+                               uint pin, uint pincount, uint freq) {
+
+   for (uint i = 0; i < pincount; i++) {
+        pio_gpio_init(pio, (pin+i) % 32);   // initialisieren aller Pins
+   } 
+
+   // pins als Ausgabe-Pins (true) festlegen
+   pio_sm_set_consecutive_pindirs(pio, sm, pin, pincount, true);
+
+   // Default Configuration holen
+   pio_sm_config c = trafficlight_program_get_default_config(offset);
+
+   // Die vier Pins definieren das out-Mapping:
+   sm_config_set_out_pins(&c, pin, pincount);
+
+   // div <= 65535 (= 2^16-1) - wird hier nicht geprüft
+   float div = (float)clock_get_hz(clk_sys) / freq;
+
+   // Jetzt Clock Divider übergeben
+   sm_config_set_clkdiv(&c, div);
+
+   // Wir kombinieren beide FIFOs zu einer TX_FIFO;
+   sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_TX);
+
+   // Rechts-Schieber, kein auto-pull, Schwellwert: 32 Bits
+   sm_config_set_out_shift(&c, true, false, 32);
+
+   // Zustandsmaschine initalisieren
+   pio_sm_init(pio, sm, offset, &c);
+
+   // und starten
+   pio_sm_set_enabled(pio, sm, true);
+}
+
+%}

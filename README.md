@@ -8,9 +8,13 @@ Then whinin PIOBeispiel you may just call cmake . && make
 The Example Circuit assumes there is a
 white  LED on GPIO17   ; can be left out, it just signals new red phase in the unoptimized version. 
                        ; in the optimized version it signals red and green phases
+                       
 red    LED on GPIO18
+
 yellow LED on GPIO19
+
 green  LED on GPIO20
+
 
 I am using 220 Ohm resistors for the LEDs
 

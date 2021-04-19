@@ -1,9 +1,11 @@
 # PIO-Beispiel
 
-Example to build a trafficlight control with Raspberry Pi Pico and its PIO hardware
+Example to build a trafficlight control with Raspberry Pi Pico and its PIO hardware.
 
-You may copy the directory structure to your own system and adapt the PDK-SDK-PATH to the CMake-files.
-Then whinin PIOBeispiel you may just call cmake . && make
+Prerequisite: You have installed the PICO-SDK and all necessary tools for Raspberry Pi Pico on your system.
+
+You may copy the directory structure to your own system and adapt the PDK-SDK-PATH to the CMake-files or set the enviroment variable PICO_SDK_PATH.
+Then within the PIO-Beispiel folder you may just call: cmake . && make
 
 The Example Circuit assumes there is a
 white  LED on GPIO17   ; can be left out, it just signals new red phase in the unoptimized version. 
@@ -22,4 +24,4 @@ The Out-Mapping is defined as {GPIO17, GPIO18, GPIO19, GPIO20}
 The OSR (Output-Shift-Register stores the patterns for the phases red, red-yellow, green, yellow 
 Its 4 bit shifts control the LEDs accordingly
 
-In the PIO state machine the OSR conducts right shifts 
+In the PIO state machine the OSR conducts right shifts. 

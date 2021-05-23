@@ -1,26 +1,26 @@
 
 .program trafficlight
-	pull                 		; Zeit von CPU-Core holen
-	mov x,osr     				; und in x speichern
-    mov isr,x                   ; sowie im ungenutzten ISR	
-    pull                        ; Pattern von CPU-Core holen
-    mov y,osr                   ; und in y speichern
+	pull                 	; Zeit von CPU-Core holen
+	mov x,osr     		; und in x speicher
+	mov isr,x               ; sowie im ungenutzten ISR	
+    	pull                    ; Pattern von CPU-Core holen
+    	mov y,osr               ; und in y speichern
 .wrap_target
-    jmp !OSRE cont 			    ; OSR != EMPTY => weiter bei cont
-	mov osr,y 					; Sonst: OSR leer => neu aufladen
+    	jmp !OSRE cont 		; OSR != EMPTY => weiter bei cont
+	mov osr,y 		; Sonst: OSR leer => neu aufladen
 cont:
 ; ROT oder GRÜN
-    mov x,isr                   ; ISR enthält Schleifenzahl für x
-    out pins,4    				; 3 Bits aus OSR zur Ausgabe
+    	mov x,isr               ; ISR enthält Schleifenzahl für x
+    	out pins,4    		; 3 Bits aus OSR zur Ausgabe
 lredgreen:
-    nop [31]
+    	nop [31]
 	jmp x-- lredgreen [31]
 ; ROT-GELB oder Gelb
-    mov x,isr                   ; ISR enthält Schleifenzahl für x
-	out pins,4  				; 3 Bits aus OSR zur Ausgabe
+    	mov x,isr               ; ISR enthält Schleifenzahl für x
+	out pins,4  		; 3 Bits aus OSR zur Ausgabe
 lyellowred:	
-    nop [10]
-    jmp x-- lyellowred [10] 
+    	nop [10]
+    	jmp x-- lyellowred [10] 
 .wrap
 
 

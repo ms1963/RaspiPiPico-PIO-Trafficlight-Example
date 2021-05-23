@@ -11,13 +11,13 @@
 cont:
 ; ROT oder GRÜN
     	mov x,isr               ; ISR enthält Schleifenzahl für x
-    	out pins,4    		; 3 Bits aus OSR zur Ausgabe
+    	out pins,4    		; 4 Bits aus OSR zur Ausgabe
 lredgreen:
     	nop [31]
 	jmp x-- lredgreen [31]
 ; ROT-GELB oder Gelb
     	mov x,isr               ; ISR enthält Schleifenzahl für x
-	out pins,4  		; 3 Bits aus OSR zur Ausgabe
+	out pins,4  		; 4 Bits aus OSR zur Ausgabe
 lyellowred:	
     	nop [10]
     	jmp x-- lyellowred [10] 

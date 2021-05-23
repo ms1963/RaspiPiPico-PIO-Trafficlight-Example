@@ -1,37 +1,37 @@
 
 .program trafficlight
 	pull                 		; Zeit von CPU-Core holen
-	mov x,osr     				; und in x speichern
-    mov isr,x                   ; sowie im ungenutzten ISR	
-    pull                        ; Pattern von CPU-Core holen
-    mov y,osr                   ; und in y speichern
+	mov x,osr     			; und in x speichern
+    	mov isr,x                   	; sowie im ungenutzten ISR	
+    	pull                        	; Pattern von CPU-Core holen
+    	mov y,osr                   	; und in y speichern
 .wrap_target
-    jmp !OSRE cont 			    ; OSR != EMPTY => weiter bei cont
-	mov osr,y 					; Sonst: OSR leer => neu aufladen
+    	jmp !OSRE cont 			; OSR != EMPTY => weiter bei cont
+	mov osr,y 			; Sonst: OSR leer => neu aufladen
 cont:
 ; ROT-PHASE
-    mov x,isr                   ; ISR enthält Schleifenzahl für x
-    out pins,4    				; 3 Bits aus OSR zur Ausgabe
+    	mov x,isr                   	; ISR enthält Schleifenzahl für x
+    	out pins,4    			; 3 Bits aus OSR zur Ausgabe
 lred:
-    nop [31]
+    	nop [31]
 	jmp x-- lred [31]
 ; ROT-GELB-PHASE
-    mov x,isr                   ; ISR enthält Schleifenzahl für x
-	out pins,4  				; 3 Bits aus OSR zur Ausgabe
+    	mov x,isr                   	; ISR enthält Schleifenzahl für x
+	out pins,4  			; 3 Bits aus OSR zur Ausgabe
 lredyellow:	
-    nop [10]
-    jmp x-- lredyellow [10] 
+    	nop [10]
+    	jmp x-- lredyellow [10] 
 ; GRÜN-PHASE
-        mov x,isr 				; ISR enthält Schleifenzahl für x
-    out pins,4  				; 3 Bits aus OSR zur Ausgabe
+        mov x,isr 			; ISR enthält Schleifenzahl für x
+    out pins,4  			; 3 Bits aus OSR zur Ausgabe
 lgreen:
-    nop [31]
+    	nop [31]
 	jmp x-- lgreen [31]
 ; GELB-PHASE
-    mov x,isr                   ; ISR enthält Schleifenzahl für x
-    out pins,4  				; 3 Bits aus OSR zur Ausgabe
+    	mov x,isr                   	; ISR enthält Schleifenzahl für x
+    	out pins,4  			; 3 Bits aus OSR zur Ausgabe
 lyellow:
-    nop [10]
+    	nop [10]
 	jmp x-- lyellow [10]
 .wrap
 
